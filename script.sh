@@ -1,0 +1,2 @@
+python finetune.py
+poweroff
