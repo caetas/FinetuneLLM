@@ -78,7 +78,7 @@ if __name__ == "__main__":
 
     # Option 1: Use SmolTalk2 (recommended for beginners)
     dataset = load_dataset("HuggingFaceTB/smoltalk2", "SFT")
-    train_dataset = dataset["aya_dataset_qwen3_32b_think"]
+    train_dataset = dataset["longalign_64k_qwen3_32b_yarn_131k_think"]
 
     # Option 2: Use your own processed dataset from Exercise 2
     # train_dataset = gsm8k_formatted.select(range(500))
