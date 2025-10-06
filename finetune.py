@@ -150,7 +150,7 @@ if __name__ == "__main__":
         
         # Logging and saving
         logging_steps=200,
-        evaluation_strategy="steps",
+        eval_strategy="steps",
         save_steps=1000,
         eval_steps=1000,
         save_total_limit=11,
