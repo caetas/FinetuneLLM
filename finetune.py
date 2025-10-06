@@ -78,7 +78,7 @@ if __name__ == "__main__":
 
     # Option 1: Use SmolTalk2 (recommended for beginners)
     dataset = load_dataset("HuggingFaceTB/smoltalk2", "SFT")
-    train_dataset = dataset["smoltalk_everyday_convs_reasoning_Qwen3_32B_think"]
+    train_dataset = dataset["aya_dataset_qwen3_32b_think"]
 
     # Option 2: Use your own processed dataset from Exercise 2
     # train_dataset = gsm8k_formatted.select(range(500))
@@ -130,7 +130,7 @@ if __name__ == "__main__":
         per_device_train_batch_size=4,  # Adjust based on your GPU memory
         gradient_accumulation_steps=2,
         learning_rate=1e-4,
-        num_train_epochs=3,  # Start with 1 epoch
+        num_train_epochs=5,  # Start with 1 epoch
         max_steps=10000,  # Limit steps for demo
         
         # Optimization
@@ -147,7 +147,7 @@ if __name__ == "__main__":
         save_total_limit=11,
         
         # Memory optimization
-        dataloader_num_workers=0,
+        dataloader_num_workers=6,
         group_by_length=True,  # Group similar length sequences
         
         # Hugging Face Hub integration
