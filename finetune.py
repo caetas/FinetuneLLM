@@ -41,8 +41,34 @@ if __name__ == "__main__":
 
     print(f"Model loaded! Parameters: {model.num_parameters():,}")
 
+    # Example: Process GSM8K math dataset
+    print("=== PROCESSING GSM8K DATASET 1 ===\n")
+
+    gsm8k = load_dataset("openai/gsm8k", "main", split="train")
+    val = load_dataset("openai/gsm8k", "main", split="test")
+    print(f"Original GSM8K example: {gsm8k[0]}")
+
+    # Convert to chat format
+    def process_gsm8k(examples):
+        for question, answer in zip(examples["question"], examples["answer"]):
+            messages = [
+                {"role": "user", "content": question},
+                {"role": "assistant", "content": answer}
+            ]
+
+        text = instruct_tokenizer.apply_chat_template(
+            messages,
+            tokenize=False,
+            add_generation_prompt=False
+        )
+        return {"text": text}
+
+    gsm8k_processed = gsm8k.map(process_gsm8k)
+    val_processed = val.map(process_gsm8k)
+    print(f"Processed example: {gsm8k_processed[0]}")
+
     # Load and prepare training dataset
-    print("=== PREPARING DATASET ===\n")
+    print("=== PREPARING DATASET 2 ===\n")
 
     # Option 1: Use SmolTalk2 (recommended for beginners)
     dataset = load_dataset("HuggingFaceTB/smoltalk2", "SFT")
@@ -82,6 +108,17 @@ if __name__ == "__main__":
     )
     print(f"Formatted example: {formatted_dataset[0]['text'][:200]}...")
 
+    # Append both datasets
+    gsm8k_formatted = gsm8k_processed.remove_columns(
+        [col for col in gsm8k_processed.column_names if col != "text"]
+    )
+    val_formatted = val_processed.remove_columns(
+        [col for col in val_processed.column_names if col != "text"]
+    )
+    from datasets import concatenate_datasets
+    formatted_dataset = concatenate_datasets([formatted_dataset, gsm8k_formatted])
+    print(f"Total training examples after concatenation: {len(formatted_dataset)}")
+
     wandb.init(project="smollm3-finetuning")
 
     # Configure training parameters
@@ -92,8 +129,8 @@ if __name__ == "__main__":
         max_length=2048,
         
         # Training hyperparameters
-        per_device_train_batch_size=1,  # Adjust based on your GPU memory
-        gradient_accumulation_steps=8,
+        per_device_train_batch_size=4,  # Adjust based on your GPU memory
+        gradient_accumulation_steps=2,
         learning_rate=1e-4,
         num_train_epochs=3,  # Start with 1 epoch
         max_steps=20000,  # Limit steps for demo
@@ -104,7 +141,7 @@ if __name__ == "__main__":
         optim="adamw_torch",
         
         # Logging and saving
-        logging_steps=500,
+        logging_steps=200,
         save_steps=2000,
         eval_steps=2000,
         save_total_limit=11,
@@ -142,6 +179,7 @@ if __name__ == "__main__":
     lora_trainer = SFTTrainer(
         model=model,
         train_dataset=formatted_dataset,  # dataset with a "text" field or messages + dataset_text_field in config
+        eval_dataset=val_formatted,
         args=training_config,
         peft_config=peft_config,  # << enable LoRA
     )
