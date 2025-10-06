@@ -78,12 +78,12 @@ if __name__ == "__main__":
     print("=== PREPARING DATASET 2 ===\n")
 
     # Option 1: Use SmolTalk2 (recommended for beginners)
-    #dataset = load_dataset("HuggingFaceTB/smoltalk2", "Mid", split="llama_nemotron_post_training_dataset_reasoning_r1[:10000]")#, "llama_nemotron_post_training_dataset_reasoning_r1").select(range(10000))
+    #dataset = load_dataset("HuggingFaceTB/smoltalk2", "Mid", split="Llama_nemotron_post_training_dataset_reasoning_r1[:10000]")#, "llama_nemotron_post_training_dataset_reasoning_r1").select(range(10000))
     #train_dataset = dataset#dataset["llama_nemotron_post_training_dataset_reasoning_r1"].select(range(10000))
     stream = load_dataset(
         "HuggingFaceTB/smoltalk2",
         "Mid",
-        split="Llama_nemotron_post_training_dataset_reasoning_r1",
+        split="Llama_Nemotron_Post_Training_Dataset_reasoning_r1",
         streaming=True
         )
 
