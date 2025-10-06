@@ -1,9 +1,12 @@
+from pydicom import Dataset
+from sklearn.pipeline import islice
 from transformers import AutoModelForCausalLM, AutoTokenizer, TrainingArguments
 from trl import SFTTrainer, SFTConfig
 from datasets import load_dataset
 import torch
 import wandb  # Optional: for experiment tracking
 from datasets import concatenate_datasets
+from itertools import islice
 
 if __name__ == "__main__":
 
@@ -77,9 +80,17 @@ if __name__ == "__main__":
     print("=== PREPARING DATASET 2 ===\n")
 
     # Option 1: Use SmolTalk2 (recommended for beginners)
-    dataset = load_dataset("HuggingFaceTB/smoltalk2", "Mid", split="llama_nemotron_post_training_dataset_reasoning_r1[:10000]")#, "llama_nemotron_post_training_dataset_reasoning_r1").select(range(10000))
-    train_dataset = dataset#dataset["llama_nemotron_post_training_dataset_reasoning_r1"].select(range(10000))
+    #dataset = load_dataset("HuggingFaceTB/smoltalk2", "Mid", split="llama_nemotron_post_training_dataset_reasoning_r1[:10000]")#, "llama_nemotron_post_training_dataset_reasoning_r1").select(range(10000))
+    #train_dataset = dataset#dataset["llama_nemotron_post_training_dataset_reasoning_r1"].select(range(10000))
+    stream = load_dataset(
+        "HuggingFaceTB/smoltalk2",
+        "Mid",
+        split="llama_nemotron_post_training_dataset_reasoning_r1",
+        streaming=True
+        )
 
+    # Take the first 10k examples only (no disk writes)
+    train_dataset = Dataset.from_list(list(islice(stream, 10_000)))
     # Option 2: Use your own processed dataset from Exercise 2
     # train_dataset = gsm8k_formatted.select(range(500))
 
