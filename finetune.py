@@ -77,8 +77,8 @@ if __name__ == "__main__":
     print("=== PREPARING DATASET 2 ===\n")
 
     # Option 1: Use SmolTalk2 (recommended for beginners)
-    dataset = load_dataset("HuggingFaceTB/smoltalk2", "Mid")#, "llama_nemotron_post_training_dataset_reasoning_r1").select(range(10000))
-    train_dataset = dataset["llama_nemotron_post_training_dataset_reasoning_r1"].select(range(10000))
+    dataset = load_dataset("HuggingFaceTB/smoltalk2", "Mid", split="llama_nemotron_post_training_dataset_reasoning_r1[:10000]")#, "llama_nemotron_post_training_dataset_reasoning_r1").select(range(10000))
+    train_dataset = dataset#dataset["llama_nemotron_post_training_dataset_reasoning_r1"].select(range(10000))
 
     # Option 2: Use your own processed dataset from Exercise 2
     # train_dataset = gsm8k_formatted.select(range(500))
