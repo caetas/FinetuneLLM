@@ -1,11 +1,9 @@
-from pydicom import Dataset
-from sklearn.pipeline import islice
 from transformers import AutoModelForCausalLM, AutoTokenizer, TrainingArguments
 from trl import SFTTrainer, SFTConfig
 from datasets import load_dataset
 import torch
 import wandb  # Optional: for experiment tracking
-from datasets import concatenate_datasets
+from datasets import concatenate_datasets, Dataset
 from itertools import islice
 
 if __name__ == "__main__":
