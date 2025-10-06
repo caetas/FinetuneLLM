@@ -117,7 +117,7 @@ if __name__ == "__main__":
     formatted_dataset = concatenate_datasets([formatted_dataset, gsm8k_formatted])
     print(f"Total training examples after concatenation: {len(formatted_dataset)}")
 
-    wandb.init(project="smollm3-finetuning")
+    wandb.init(project="smollm3-finetuning", name=f"{new_model_name}-training")
 
     # Configure training parameters
     training_config = SFTConfig(
@@ -131,21 +131,22 @@ if __name__ == "__main__":
         gradient_accumulation_steps=2,
         learning_rate=1e-4,
         num_train_epochs=3,  # Start with 1 epoch
-        max_steps=20000,  # Limit steps for demo
+        max_steps=10000,  # Limit steps for demo
         
         # Optimization
-        warmup_steps=2000,
+        warmup_steps=1000,
         weight_decay=0.01,
         optim="adamw_torch",
+        bf16=True,  # Use bf16 if supported
         
         # Logging and saving
         logging_steps=200,
-        save_steps=2000,
-        eval_steps=2000,
+        save_steps=1000,
+        eval_steps=1000,
         save_total_limit=11,
         
         # Memory optimization
-        dataloader_num_workers=6,
+        dataloader_num_workers=0,
         group_by_length=True,  # Group similar length sequences
         
         # Hugging Face Hub integration
