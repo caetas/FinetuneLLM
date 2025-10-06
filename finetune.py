@@ -3,6 +3,7 @@ from trl import SFTTrainer, SFTConfig
 from datasets import load_dataset
 import torch
 import wandb  # Optional: for experiment tracking
+from datasets import concatenate_datasets
 
 if __name__ == "__main__":
 
@@ -49,12 +50,11 @@ if __name__ == "__main__":
     print(f"Original GSM8K example: {gsm8k[0]}")
 
     # Convert to chat format
-    def process_gsm8k(examples):
-        for question, answer in zip(examples["question"], examples["answer"]):
-            messages = [
-                {"role": "user", "content": question},
-                {"role": "assistant", "content": answer}
-            ]
+    def process_gsm8k(example):
+        messages = [
+            {"role": "user", "content": example["question"]},
+            {"role": "assistant", "content": example["answer"]}
+        ]
 
         text = instruct_tokenizer.apply_chat_template(
             messages,
@@ -65,7 +65,13 @@ if __name__ == "__main__":
 
     gsm8k_processed = gsm8k.map(process_gsm8k)
     val_processed = val.map(process_gsm8k)
-    print(f"Processed example: {gsm8k_processed[0]}")
+    gsm8k_formatted = gsm8k_processed.remove_columns(
+        [col for col in gsm8k_processed.column_names if col != "text"]
+    )
+    val_formatted = val_processed.remove_columns(
+        [col for col in val_processed.column_names if col != "text"]
+    )
+    print(f"Processed GSM8K example: {gsm8k_formatted[0]['text'][:200]}...")
 
     # Load and prepare training dataset
     print("=== PREPARING DATASET 2 ===\n")
@@ -100,22 +106,14 @@ if __name__ == "__main__":
             add_generation_prompt=False
         )
         return {"text": text}
-
     # Apply formatting
     formatted_dataset = train_dataset.map(format_chat_template)
     formatted_dataset = formatted_dataset.remove_columns(
         [col for col in formatted_dataset.column_names if col != "text"]
     )
     print(f"Formatted example: {formatted_dataset[0]['text'][:200]}...")
-
+    
     # Append both datasets
-    gsm8k_formatted = gsm8k_processed.remove_columns(
-        [col for col in gsm8k_processed.column_names if col != "text"]
-    )
-    val_formatted = val_processed.remove_columns(
-        [col for col in val_processed.column_names if col != "text"]
-    )
-    from datasets import concatenate_datasets
     formatted_dataset = concatenate_datasets([formatted_dataset, gsm8k_formatted])
     print(f"Total training examples after concatenation: {len(formatted_dataset)}")
 
