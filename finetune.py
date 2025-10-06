@@ -83,7 +83,7 @@ if __name__ == "__main__":
     stream = load_dataset(
         "HuggingFaceTB/smoltalk2",
         "Mid",
-        split="llama_nemotron_post_training_dataset_reasoning_r1",
+        split="Llama_nemotron_post_training_dataset_reasoning_r1",
         streaming=True
         )
 
