@@ -10,3 +10,4 @@ wheels/
 .venv
 wandb/
 SmolLM3-*/
+lighteval/
