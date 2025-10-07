@@ -25,7 +25,7 @@ model = AutoModelForImageTextToText.from_pretrained(
 
 processor = AutoProcessor.from_pretrained(model_name)
 
-train_dataset, eval_dataset = load_dataset("HuggingFaceM4/ChartQA", split=["train[:10%]", "val[:10%]"])
+train_dataset, eval_dataset = load_dataset("HuggingFaceM4/ChartQA", split=["train", "val"])
 
 system_message = """You are a Vision Language Model specialized in interpreting visual data from chart images.
 Your task is to analyze the provided chart image and respond to queries with concise answers, usually a single word, number, or short phrase.
@@ -85,14 +85,14 @@ training_args = SFTConfig(
     per_device_train_batch_size=4,
     gradient_accumulation_steps=2,
     learning_rate=1e-4,
-    logging_steps=25,
+    logging_steps=200,
     save_strategy="steps",
-    save_steps=25,
+    save_steps=1000,
     eval_strategy="steps",
-    eval_steps=100,
+    eval_steps=1000,
     optim="adamw_torch_fused",
     bf16=True,
-    push_to_hub=True,
+    push_to_hub=False,
     report_to="wandb",
     max_length=None,
 )
