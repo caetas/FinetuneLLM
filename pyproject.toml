@@ -17,6 +17,9 @@ dependencies = [
     "peft>=0.17.1",
     "torch>=2.8.0",
     "emoji>=2.15.0",
+    "matplotlib>=3.10.6",
+    "torchvision>=0.23.0",
+    "num2words>=0.5.14",
 ]
 
 [[tool.uv.index]]
